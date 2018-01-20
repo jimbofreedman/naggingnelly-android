@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
@@ -42,7 +43,7 @@ public class HomeActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private EditText editNewActionShortDescription;
     private RecyclerView actionList;
-
+    private RecyclerView.Adapter mAdapter;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -99,6 +100,9 @@ public class HomeActivity extends AppCompatActivity {
 
         api = retrofit.create(API.class);
 
+        actionList.setHasFixedSize(true);
+        actionList.setLayoutManager(new LinearLayoutManager(this));
+
         progressBar.setVisibility(View.VISIBLE);
         final ProgressBar pb = progressBar;
 
@@ -109,6 +113,10 @@ public class HomeActivity extends AppCompatActivity {
                 pb.setVisibility(View.INVISIBLE);
                 if (response.isSuccessful()) {
                     List<Action> actions = response.body();
+
+                    mAdapter = new MyAdapter(actions);
+                    actionList.setAdapter(mAdapter);
+
 
                     for (Action action: actions) {
                         Log.i(TAG, String.format("Retrieved action: %s %s", action.getShortDescription(), call.request().body()));
