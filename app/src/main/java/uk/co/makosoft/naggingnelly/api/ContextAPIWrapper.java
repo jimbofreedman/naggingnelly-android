@@ -25,28 +25,47 @@ import uk.co.makosoft.naggingnelly.MyAdapter;
  * Created by jimbo on 20/01/2018.
  */
 
-public class ActionAPIWrapper {
-    protected String TAG = "ActionAPI";
-    ActionAPI api;
+public class ContextAPIWrapper {
+    protected String TAG = "ContextAPI";
+    ContextAPI api;
 
-    public ActionAPIWrapper(Retrofit retrofit) {
-        api = retrofit.create(ActionAPI.class);
+    public ContextAPIWrapper() {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(logging);
+        httpClient.addInterceptor(new Interceptor() {
+            @Override
+            public okhttp3.Response intercept(Chain chain) throws IOException {
+                Request request = chain.request().newBuilder().addHeader("Authorization", "Token 1d9d51931c542249ce5430e3d81332e38260ec35").build();
+                return chain.proceed(request);
+            }
+        });
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:8000")
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(JacksonConverterFactory.create())
+                .client(httpClient.build())
+                .build();
+
+        api = retrofit.create(ContextAPI.class);
     }
 
-    List<Action> entities = new ArrayList<>();
-    public List<Action> getEntities() {
+    List<Context> entities = new ArrayList<>();
+    public List<Context> getEntities() {
         return entities;
     }
 
     public void list(final ProgressBar pb, final MyAdapter adapter) {
-        Log.d(TAG, String.format("Retrieving entities"));
+        Log.i(TAG, String.format("Retrieving entities"));
 
         pb.setVisibility(View.VISIBLE);
 
-        Call<List<Action>> call = api.list();
-        call.enqueue(new Callback<List<Action>>() {
+        Call<List<Context>> call = api.list();
+        call.enqueue(new Callback<List<Context>>() {
             @Override
-            public void onResponse(Call<List<Action>> call, Response<List<Action>> response) {
+            public void onResponse(Call<List<Context>> call, Response<List<Context>> response) {
                 pb.setVisibility(View.INVISIBLE);
                 if (response.isSuccessful()) {
                     entities.clear();
@@ -59,24 +78,24 @@ public class ActionAPIWrapper {
             }
 
             @Override
-            public void onFailure(Call<List<Action>> call, Throwable t) {
+            public void onFailure(Call<List<Context>> call, Throwable t) {
                 Log.e(TAG, t.getMessage());
             }
         });
     }
 
-    public void create(Action entity, final ProgressBar pb, final MyAdapter adapter) {
-        Call<Action> call = api.create(entity);
+    public void create(Context entity, final ProgressBar pb, final MyAdapter adapter) {
+        Call<Context> call = api.create(entity);
 
-        Log.d(TAG, String.format("Adding entity: %s", entity.toString()));
+        Log.i(TAG, String.format("Adding entity: %s", entity.toString()));
 
         pb.setVisibility(View.VISIBLE);
-        call.enqueue(new Callback<Action>() {
+        call.enqueue(new Callback<Context>() {
             @Override
-            public void onResponse(Call<Action> call, Response<Action> response) {
+            public void onResponse(Call<Context> call, Response<Context> response) {
                 pb.setVisibility(View.INVISIBLE);
                 if (response.isSuccessful()) {
-                    Action returnedEntity = response.body();
+                    Context returnedEntity = response.body();
                     entities.add(returnedEntity);
                     adapter.notifyDataSetChanged();
                     Log.i(TAG, String.format("Added entity: %s %s", returnedEntity.toString(), call.request().body()));
@@ -86,25 +105,24 @@ public class ActionAPIWrapper {
             }
 
             @Override
-            public void onFailure(Call<Action> call, Throwable t) {
-                pb.setVisibility(View.INVISIBLE);
+            public void onFailure(Call<Context> call, Throwable t) {
                 Log.e(TAG, t.getMessage());
             }
         });
     }
 
-    public void detail(Action entity, final ProgressBar pb, final MyAdapter adapter) {
-        Call<Action> call = api.detail(entity.getId());
+    public void detail(Context entity, final ProgressBar pb, final MyAdapter adapter) {
+        Call<Context> call = api.detail(entity.getId());
 
-        Log.d(TAG, String.format("Adding entity: %s", entity.toString()));
+        Log.i(TAG, String.format("Adding entity: %s", entity.toString()));
 
         pb.setVisibility(View.VISIBLE);
-        call.enqueue(new Callback<Action>() {
+        call.enqueue(new Callback<Context>() {
             @Override
-            public void onResponse(Call<Action> call, Response<Action> response) {
+            public void onResponse(Call<Context> call, Response<Context> response) {
                 pb.setVisibility(View.INVISIBLE);
                 if (response.isSuccessful()) {
-                    Action returnedEntity = response.body();
+                    Context returnedEntity = response.body();
                     entities.add(returnedEntity);
                     adapter.notifyDataSetChanged();
                     Log.i(TAG, String.format("Added entity: %s %s", returnedEntity.toString(), call.request().body()));
@@ -114,25 +132,24 @@ public class ActionAPIWrapper {
             }
 
             @Override
-            public void onFailure(Call<Action> call, Throwable t) {
-                pb.setVisibility(View.INVISIBLE);
+            public void onFailure(Call<Context> call, Throwable t) {
                 Log.e(TAG, t.getMessage());
             }
         });
     }
 
-    public void put(final Action entity, final ProgressBar pb, final MyAdapter adapter) {
-        Call<Action> call = api.update(entity.getId(), entity);
+    public void put(final Context entity, final ProgressBar pb, final MyAdapter adapter) {
+        Call<Context> call = api.update(entity.getId(), entity);
 
-        Log.d(TAG, String.format("Putting entity: %s", entity.toString()));
+        Log.i(TAG, String.format("Putting entity: %s", entity.toString()));
 
         pb.setVisibility(View.VISIBLE);
-        call.enqueue(new Callback<Action>() {
+        call.enqueue(new Callback<Context>() {
             @Override
-            public void onResponse(Call<Action> call, Response<Action> response) {
+            public void onResponse(Call<Context> call, Response<Context> response) {
                 pb.setVisibility(View.INVISIBLE);
                 if (response.isSuccessful()) {
-                    Action returnedEntity = response.body();
+                    Context returnedEntity = response.body();
                     entities.remove(entity);
                     entities.add(returnedEntity);
                     Log.i(TAG, String.format("Put entity: %s %s", returnedEntity.toString(), call.request().body()));
@@ -142,25 +159,24 @@ public class ActionAPIWrapper {
             }
 
             @Override
-            public void onFailure(Call<Action> call, Throwable t) {
-                pb.setVisibility(View.INVISIBLE);
+            public void onFailure(Call<Context> call, Throwable t) {
                 Log.e(TAG, t.getMessage());
             }
         });
     }
 
-    public void patch(final Action entity, final ProgressBar pb, final MyAdapter adapter) {
-        Call<Action> call = api.update(entity.getId(), entity);
+    public void patch(final Context entity, final ProgressBar pb, final MyAdapter adapter) {
+        Call<Context> call = api.update(entity.getId(), entity);
 
-        Log.d(TAG, String.format("Patching entity: %s", entity.toString()));
+        Log.i(TAG, String.format("Patching entity: %s", entity.toString()));
 
         pb.setVisibility(View.VISIBLE);
-        call.enqueue(new Callback<Action>() {
+        call.enqueue(new Callback<Context>() {
             @Override
-            public void onResponse(Call<Action> call, Response<Action> response) {
+            public void onResponse(Call<Context> call, Response<Context> response) {
                 pb.setVisibility(View.INVISIBLE);
                 if (response.isSuccessful()) {
-                    Action returnedEntity = response.body();
+                    Context returnedEntity = response.body();
                     entities.remove(entity);
                     entities.add(returnedEntity);
                     Log.i(TAG, String.format("Patched entity: %s %s", returnedEntity.toString(), call.request().body()));
@@ -170,22 +186,21 @@ public class ActionAPIWrapper {
             }
 
             @Override
-            public void onFailure(Call<Action> call, Throwable t) {
-                pb.setVisibility(View.INVISIBLE);
+            public void onFailure(Call<Context> call, Throwable t) {
                 Log.e(TAG, t.getMessage());
             }
         });
     }
 
-    public void delete(final Action entity, final ProgressBar pb, final MyAdapter adapter) {
-        Call<Action> call = api.delete(entity.getId());
+    public void delete(final Context entity, final ProgressBar pb, final MyAdapter adapter) {
+        Call<Context> call = api.delete(entity.getId());
 
-        Log.d(TAG, String.format("Deleting entity: %s", entity.toString()));
+        Log.i(TAG, String.format("Deleting entity: %s", entity.toString()));
 
         pb.setVisibility(View.VISIBLE);
-        call.enqueue(new Callback<Action>() {
+        call.enqueue(new Callback<Context>() {
             @Override
-            public void onResponse(Call<Action> call, Response<Action> response) {
+            public void onResponse(Call<Context> call, Response<Context> response) {
                 pb.setVisibility(View.INVISIBLE);
                 if (response.isSuccessful()) {
                     entities.remove(entity);
@@ -196,8 +211,7 @@ public class ActionAPIWrapper {
             }
 
             @Override
-            public void onFailure(Call<Action> call, Throwable t) {
-                pb.setVisibility(View.INVISIBLE);
+            public void onFailure(Call<Context> call, Throwable t) {
                 Log.e(TAG, t.getMessage());
             }
         });

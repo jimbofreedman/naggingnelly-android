@@ -18,6 +18,9 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 import uk.co.makosoft.naggingnelly.api.Action;
 import uk.co.makosoft.naggingnelly.api.ActionAPIWrapper;
 
@@ -69,24 +72,29 @@ public class HomeActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        actionList.setHasFixedSize(true);
+        actionList.setLayoutManager(new LinearLayoutManager(this));
+
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(logging);
         httpClient.addInterceptor(new Interceptor() {
             @Override
-            public okhttp3.Response intercept(Chain chain) throws IOException {
+            public okhttp3.Response intercept(Interceptor.Chain chain) throws IOException {
                 Request request = chain.request().newBuilder().addHeader("Authorization", "Token 1d9d51931c542249ce5430e3d81332e38260ec35").build();
                 return chain.proceed(request);
             }
         });
 
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:8000")
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(JacksonConverterFactory.create())
+                .client(httpClient.build())
+                .build();
 
-        actionList.setHasFixedSize(true);
-        actionList.setLayoutManager(new LinearLayoutManager(this));
-
-
-        apiWrapper = new ActionAPIWrapper();
+        apiWrapper = new ActionAPIWrapper(retrofit);
 
         mAdapter = new MyAdapter(apiWrapper.getEntities());
         actionList.setAdapter(mAdapter);
