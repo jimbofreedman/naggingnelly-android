@@ -102,5 +102,6 @@ public class HomeActivity extends AppCompatActivity {
         String message = editNewActionShortDescription.getText().toString();
         apiWrapper.create(new Action(message), progressBar, mAdapter);
         editNewActionShortDescription.setText("");
+        actionList.requestFocus();
     }
 }
