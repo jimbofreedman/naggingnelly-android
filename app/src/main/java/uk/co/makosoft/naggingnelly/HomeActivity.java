@@ -6,7 +6,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -14,20 +13,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
 import uk.co.makosoft.naggingnelly.api.Action;
-import uk.co.makosoft.naggingnelly.api.EntityAPI;
+import uk.co.makosoft.naggingnelly.api.ActionAPIWrapper;
 
 public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "Home";
 
-    private EntityAPI apiWrapper;
+    private ActionAPIWrapper apiWrapper;
 
     private TextView mTextMessage;
 
@@ -89,7 +86,7 @@ public class HomeActivity extends AppCompatActivity {
         actionList.setLayoutManager(new LinearLayoutManager(this));
 
 
-        apiWrapper = new EntityAPI("gtd/actions");
+        apiWrapper = new ActionAPIWrapper();
 
         mAdapter = new MyAdapter(apiWrapper.getEntities());
         actionList.setAdapter(mAdapter);

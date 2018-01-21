@@ -25,15 +25,11 @@ import uk.co.makosoft.naggingnelly.MyAdapter;
  * Created by jimbo on 20/01/2018.
  */
 
-public class EntityAPI {
-    private String TAG = "EntityApi:";
-    private String baseUrl;
+public class ActionAPIWrapper {
+    protected String TAG = "ActionAPI";
     ActionAPI api;
 
-    public EntityAPI(String _baseUrl) {
-        baseUrl = _baseUrl;
-        TAG += _baseUrl;
-
+    public ActionAPIWrapper() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
