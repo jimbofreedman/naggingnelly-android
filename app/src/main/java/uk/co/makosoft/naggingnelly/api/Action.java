@@ -57,6 +57,8 @@ public class Action {
         status = 0;
     }
 
+    public Integer getId() { return id; }
+
     public String getShortDescription() {
         return shortDescription;
     }

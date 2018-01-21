@@ -30,6 +30,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         mDataset = myDataset;
     }
 
+    public void setDataset(List<Action> myDataset) {
+        mDataset = myDataset;
+    }
+
     @Override
     public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.sample_action_card_view, viewGroup, false);

@@ -1,6 +1,5 @@
 package uk.co.makosoft.naggingnelly;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -14,27 +13,21 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.io.Console;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.jackson.JacksonConverterFactory;
-import uk.co.makosoft.naggingnelly.api.API;
 import uk.co.makosoft.naggingnelly.api.Action;
+import uk.co.makosoft.naggingnelly.api.EntityAPI;
 
 public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "Home";
 
-    private API api;
+    private EntityAPI apiWrapper;
 
     private TextView mTextMessage;
 
@@ -43,7 +36,7 @@ public class HomeActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private EditText editNewActionShortDescription;
     private RecyclerView actionList;
-    private RecyclerView.Adapter mAdapter;
+    private MyAdapter mAdapter;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -91,78 +84,23 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8000")
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(JacksonConverterFactory.create())
-                .client(httpClient.build())
-                .build();
-
-        api = retrofit.create(API.class);
 
         actionList.setHasFixedSize(true);
         actionList.setLayoutManager(new LinearLayoutManager(this));
 
-        progressBar.setVisibility(View.VISIBLE);
-        final ProgressBar pb = progressBar;
 
-        Call<List<Action>> call = api.getActions();
-        call.enqueue(new Callback<List<Action>>() {
-            @Override
-            public void onResponse(Call<List<Action>> call, Response<List<Action>> response) {
-                pb.setVisibility(View.INVISIBLE);
-                if (response.isSuccessful()) {
-                    List<Action> actions = response.body();
+        apiWrapper = new EntityAPI("gtd/actions");
 
-                    mAdapter = new MyAdapter(actions);
-                    actionList.setAdapter(mAdapter);
+        mAdapter = new MyAdapter(apiWrapper.getEntities());
+        actionList.setAdapter(mAdapter);
 
-
-                    for (Action action: actions) {
-                        Log.i(TAG, String.format("Retrieved action: %s %s", action.getShortDescription(), call.request().body()));
-                    }
-                } else {
-                    Log.e(TAG, String.format("%s %s %s %s", response.code(), response.errorBody(), response.message(), response.raw()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Action>> call, Throwable t) {
-                Log.e(TAG, t.getMessage());
-            }
-        });
+        apiWrapper.list(progressBar, mAdapter);
     }
 
 
     public void sendMessage(View view) {
         String message = editNewActionShortDescription.getText().toString();
-        Call<Action> call = api.postAction(new Action(message));
-
-        Log.i(TAG, String.format("Adding action: %s", message));
-
-        progressBar.setVisibility(View.VISIBLE);
-        final ProgressBar pb = progressBar;
-
-        final Intent intent = new Intent(this, EditActionActivity.class);
-
-        call.enqueue(new Callback<Action>() {
-            @Override
-            public void onResponse(Call<Action> call, Response<Action> response) {
-                pb.setVisibility(View.INVISIBLE);
-                if (response.isSuccessful()) {
-                    Action action = response.body();
-                    intent.putExtra(EXTRA_MESSAGE, action.getShortDescription());
-                    startActivity(intent);
-                    Log.i(TAG, String.format("Added action: %s %s", action.getShortDescription(), call.request().body()));
-                } else {
-                    Log.e(TAG, String.format("%s %s %s %s", response.code(), response.errorBody(), response.message(), response.raw()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Action> call, Throwable t) {
-                Log.e(TAG, t.getMessage());
-            }
-        });
+        apiWrapper.create(new Action(message), progressBar, mAdapter);
+        editNewActionShortDescription.setText("");
     }
 }
