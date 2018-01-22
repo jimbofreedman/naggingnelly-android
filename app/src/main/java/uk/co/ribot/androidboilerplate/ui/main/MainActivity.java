@@ -16,6 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.ribot.androidboilerplate.R;
 import uk.co.ribot.androidboilerplate.data.SyncService;
+import uk.co.ribot.androidboilerplate.data.model.Folder;
 import uk.co.ribot.androidboilerplate.data.model.Ribot;
 import uk.co.ribot.androidboilerplate.ui.base.BaseActivity;
 import uk.co.ribot.androidboilerplate.util.DialogFactory;
@@ -27,6 +28,7 @@ public class MainActivity extends BaseActivity implements MainMvpView {
 
     @Inject MainPresenter mMainPresenter;
     @Inject RibotsAdapter mRibotsAdapter;
+    @Inject FoldersAdapter mFoldersAdapter;
 
     @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
 
@@ -48,10 +50,11 @@ public class MainActivity extends BaseActivity implements MainMvpView {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        mRecyclerView.setAdapter(mRibotsAdapter);
+        mRecyclerView.setAdapter(mFoldersAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mMainPresenter.attachView(this);
         mMainPresenter.loadRibots();
+        mMainPresenter.loadFolders();
 
         if (getIntent().getBooleanExtra(EXTRA_TRIGGER_SYNC_FLAG, true)) {
             startService(SyncService.getStartIntent(this));
@@ -86,4 +89,16 @@ public class MainActivity extends BaseActivity implements MainMvpView {
         Toast.makeText(this, R.string.empty_ribots, Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    public void showFolders(List<Folder> folders) {
+        mFoldersAdapter.setFolders(folders);
+        mFoldersAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void showFoldersEmpty() {
+        mFoldersAdapter.setFolders(Collections.<Folder>emptyList());
+        mFoldersAdapter.notifyDataSetChanged();
+        Toast.makeText(this, R.string.empty_folders, Toast.LENGTH_LONG).show();
+    }
 }

@@ -8,5 +8,6 @@
     <string name="dialog_error_title">Sorry</string>
 
     <string name="empty_ribots">There aren\'t any ribots</string>
+    <string name="empty_folders">There aren\'t any folders</string>
     <string name="error_loading_ribots">There was a problem loading the ribots</string>
 </resources>

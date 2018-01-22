@@ -11,20 +11,24 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import uk.co.ribot.androidboilerplate.data.local.DatabaseHelper;
 import uk.co.ribot.androidboilerplate.data.local.PreferencesHelper;
+import uk.co.ribot.androidboilerplate.data.model.Folder;
 import uk.co.ribot.androidboilerplate.data.model.Ribot;
+import uk.co.ribot.androidboilerplate.data.remote.FoldersService;
 import uk.co.ribot.androidboilerplate.data.remote.RibotsService;
 
 @Singleton
 public class DataManager {
 
     private final RibotsService mRibotsService;
+    private final FoldersService mFoldersService;
     private final DatabaseHelper mDatabaseHelper;
     private final PreferencesHelper mPreferencesHelper;
 
     @Inject
-    public DataManager(RibotsService ribotsService, PreferencesHelper preferencesHelper,
+    public DataManager(RibotsService ribotsService, FoldersService foldersService, PreferencesHelper preferencesHelper,
                        DatabaseHelper databaseHelper) {
         mRibotsService = ribotsService;
+        mFoldersService = foldersService;
         mPreferencesHelper = preferencesHelper;
         mDatabaseHelper = databaseHelper;
     }
@@ -46,6 +50,22 @@ public class DataManager {
 
     public Observable<List<Ribot>> getRibots() {
         return mDatabaseHelper.getRibots().distinct();
+    }
+
+
+    public Observable<Folder> syncFolders() {
+        return mFoldersService.getFolders()
+                .concatMap(new Function<List<Folder>, ObservableSource<? extends Folder>>() {
+                    @Override
+                    public ObservableSource<? extends Folder> apply(@NonNull List<Folder> folders)
+                            throws Exception {
+                        return mDatabaseHelper.setFolders(folders);
+                    }
+                });
+    }
+
+    public Observable<List<Folder>> getFolders() {
+        return mDatabaseHelper.getFolders().distinct();
     }
 
 }

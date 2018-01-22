@@ -5,6 +5,7 @@ import android.database.Cursor;
 
 import java.util.Date;
 
+import uk.co.ribot.androidboilerplate.data.model.Folder;
 import uk.co.ribot.androidboilerplate.data.model.Name;
 import uk.co.ribot.androidboilerplate.data.model.Profile;
 
@@ -59,6 +60,33 @@ public class Db {
                     .setDateOfBirth(new Date(dobTime))
                     .setAvatar(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_AVATAR)))
                     .setBio(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_BIO)))
+                    .build();
+        }
+    }
+
+    public abstract static class FolderTable {
+        public static final String TABLE_NAME = "folder";
+
+        public static final String COLUMN_ID = "id";
+        public static final String COLUMN_NAME = "name";
+
+        public static final String CREATE =
+                "CREATE TABLE " + TABLE_NAME + " (" +
+                        COLUMN_ID + " INTEGER PRIMARY KEY, " +
+                        COLUMN_NAME + " TEXT NOT NULL " +
+                        " ); ";
+
+        public static ContentValues toContentValues(Folder folder) {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_ID, folder.id());
+            values.put(COLUMN_NAME, folder.name());
+            return values;
+        }
+
+        public static Folder parseCursor(Cursor cursor) {
+            return Folder.builder()
+                    .setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)))
+                    .setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)))
                     .build();
         }
     }

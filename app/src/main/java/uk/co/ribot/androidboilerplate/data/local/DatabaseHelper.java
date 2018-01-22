@@ -20,6 +20,7 @@ import io.reactivex.Scheduler;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import uk.co.ribot.androidboilerplate.data.model.Folder;
 import uk.co.ribot.androidboilerplate.data.model.Ribot;
 
 @Singleton
@@ -76,4 +77,37 @@ public class DatabaseHelper {
                 });
     }
 
+    public Observable<Folder> setFolders(final Collection<Folder> newFolders) {
+        return Observable.create(new ObservableOnSubscribe<Folder>() {
+            @Override
+            public void subscribe(ObservableEmitter<Folder> emitter) throws Exception {
+                if (emitter.isDisposed()) return;
+                BriteDatabase.Transaction transaction = mDb.newTransaction();
+                try {
+                    mDb.delete(Db.FolderTable.TABLE_NAME, null);
+                    for (Folder folder : newFolders) {
+                        long result = mDb.insert(Db.FolderTable.TABLE_NAME,
+                                Db.FolderTable.toContentValues(folder),
+                                SQLiteDatabase.CONFLICT_REPLACE);
+                        if (result >= 0) emitter.onNext(folder);
+                    }
+                    transaction.markSuccessful();
+                    emitter.onComplete();
+                } finally {
+                    transaction.end();
+                }
+            }
+        });
+    }
+
+    public Observable<List<Folder>> getFolders() {
+        return mDb.createQuery(Db.FolderTable.TABLE_NAME,
+                "SELECT * FROM " + Db.FolderTable.TABLE_NAME)
+                .mapToList(new Function<Cursor, Folder>() {
+                    @Override
+                    public Folder apply(@NonNull Cursor cursor) throws Exception {
+                        return Folder.create(Db.FolderTable.parseCursor(cursor));
+                    }
+                });
+    }
 }

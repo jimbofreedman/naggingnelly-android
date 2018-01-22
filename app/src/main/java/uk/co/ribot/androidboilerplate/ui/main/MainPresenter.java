@@ -11,6 +11,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 import uk.co.ribot.androidboilerplate.data.DataManager;
+import uk.co.ribot.androidboilerplate.data.model.Folder;
 import uk.co.ribot.androidboilerplate.data.model.Ribot;
 import uk.co.ribot.androidboilerplate.injection.ConfigPersistent;
 import uk.co.ribot.androidboilerplate.ui.base.BasePresenter;
@@ -56,6 +57,40 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
                             getMvpView().showRibotsEmpty();
                         } else {
                             getMvpView().showRibots(ribots);
+                        }
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Timber.e(e, "There was an error loading the ribots.");
+                        getMvpView().showError();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    public void loadFolders() {
+        checkViewAttached();
+        RxUtil.dispose(mDisposable);
+        mDataManager.getFolders()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Observer<List<Folder>>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        mDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(@NonNull List<Folder> folders) {
+                        if (folders.isEmpty()) {
+                            getMvpView().showFoldersEmpty();
+                        } else {
+                            getMvpView().showFolders(folders);
                         }
                     }
 

@@ -15,20 +15,21 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
+import uk.co.ribot.androidboilerplate.data.model.Folder;
 import uk.co.ribot.androidboilerplate.data.model.Ribot;
 import uk.co.ribot.androidboilerplate.util.MyGsonTypeAdapterFactory;
 
-public interface RibotsService {
+public interface FoldersService {
 
-    String ENDPOINT = "https://api.ribot.io/";
+    String ENDPOINT = "http://10.0.2.2:8000";
 
-    @GET("ribots")
-    Observable<List<Ribot>> getRibots();
+    @GET("/gtd/folders/")
+    Observable<List<Folder>> getFolders();
 
     /******** Helper class that sets up a new services *******/
     class Creator {
 
-        public static RibotsService newRibotsService() {
+        public static FoldersService newFoldersService() {
             Gson gson = new GsonBuilder()
                     .registerTypeAdapterFactory(MyGsonTypeAdapterFactory.create())
                     .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -38,14 +39,21 @@ public interface RibotsService {
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
             OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
             httpClient.addInterceptor(logging);
+            httpClient.addInterceptor(new Interceptor() {
+                @Override
+                public okhttp3.Response intercept(Chain chain) throws IOException {
+                    Request request = chain.request().newBuilder().addHeader("Authorization", "Token 1d9d51931c542249ce5430e3d81332e38260ec35").build();
+                    return chain.proceed(request);
+                }
+            });
 
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(RibotsService.ENDPOINT)
+                    .baseUrl(FoldersService.ENDPOINT)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .client(httpClient.build())
                     .build();
-            return retrofit.create(RibotsService.class);
+            return retrofit.create(FoldersService.class);
         }
     }
 }
