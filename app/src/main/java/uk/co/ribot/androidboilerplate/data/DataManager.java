@@ -11,24 +11,25 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import uk.co.ribot.androidboilerplate.data.local.DatabaseHelper;
 import uk.co.ribot.androidboilerplate.data.local.PreferencesHelper;
+import uk.co.ribot.androidboilerplate.data.model.Action;
 import uk.co.ribot.androidboilerplate.data.model.Folder;
 import uk.co.ribot.androidboilerplate.data.model.Ribot;
-import uk.co.ribot.androidboilerplate.data.remote.FoldersService;
+import uk.co.ribot.androidboilerplate.data.remote.GtdService;
 import uk.co.ribot.androidboilerplate.data.remote.RibotsService;
 
 @Singleton
 public class DataManager {
 
     private final RibotsService mRibotsService;
-    private final FoldersService mFoldersService;
+    private final GtdService mGtdService;
     private final DatabaseHelper mDatabaseHelper;
     private final PreferencesHelper mPreferencesHelper;
 
     @Inject
-    public DataManager(RibotsService ribotsService, FoldersService foldersService, PreferencesHelper preferencesHelper,
+    public DataManager(RibotsService ribotsService, GtdService gtdService, PreferencesHelper preferencesHelper,
                        DatabaseHelper databaseHelper) {
         mRibotsService = ribotsService;
-        mFoldersService = foldersService;
+        mGtdService = gtdService;
         mPreferencesHelper = preferencesHelper;
         mDatabaseHelper = databaseHelper;
     }
@@ -54,7 +55,7 @@ public class DataManager {
 
 
     public Observable<Folder> syncFolders() {
-        return mFoldersService.getFolders()
+        return mGtdService.getFolders()
                 .concatMap(new Function<List<Folder>, ObservableSource<? extends Folder>>() {
                     @Override
                     public ObservableSource<? extends Folder> apply(@NonNull List<Folder> folders)
@@ -66,6 +67,21 @@ public class DataManager {
 
     public Observable<List<Folder>> getFolders() {
         return mDatabaseHelper.getFolders().distinct();
+    }
+
+    public Observable<Action> syncActions() {
+        return mGtdService.getActions()
+                .concatMap(new Function<List<Action>, ObservableSource<? extends Action>>() {
+                    @Override
+                    public ObservableSource<? extends Action> apply(@NonNull List<Action> actions)
+                            throws Exception {
+                        return mDatabaseHelper.setActions(actions);
+                    }
+                });
+    }
+
+    public Observable<List<Action>> getActions() {
+        return mDatabaseHelper.getActions().distinct();
     }
 
 }

@@ -5,6 +5,7 @@ import android.database.Cursor;
 
 import java.util.Date;
 
+import uk.co.ribot.androidboilerplate.data.model.Action;
 import uk.co.ribot.androidboilerplate.data.model.Folder;
 import uk.co.ribot.androidboilerplate.data.model.Name;
 import uk.co.ribot.androidboilerplate.data.model.Profile;
@@ -65,7 +66,7 @@ public class Db {
     }
 
     public abstract static class FolderTable {
-        public static final String TABLE_NAME = "folder";
+        public static final String TABLE_NAME = "gtd_folder";
 
         public static final String COLUMN_ID = "id";
         public static final String COLUMN_NAME = "name";
@@ -87,6 +88,33 @@ public class Db {
             return Folder.builder()
                     .setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)))
                     .setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)))
+                    .build();
+        }
+    }
+
+    public abstract static class ActionTable {
+        public static final String TABLE_NAME = "gtd_action";
+
+        public static final String COLUMN_ID = "id";
+        public static final String COLUMN_SHORT_DESCRIPTION = "name";
+
+        public static final String CREATE =
+                "CREATE TABLE " + TABLE_NAME + " (" +
+                        COLUMN_ID + " INTEGER PRIMARY KEY, " +
+                        COLUMN_SHORT_DESCRIPTION + " TEXT NOT NULL " +
+                        " ); ";
+
+        public static ContentValues toContentValues(Action action) {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_ID, action.id());
+            values.put(COLUMN_SHORT_DESCRIPTION, action.shortDescription());
+            return values;
+        }
+
+        public static Action parseCursor(Cursor cursor) {
+            return Action.builder()
+                    .setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)))
+                    .setShortDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SHORT_DESCRIPTION)))
                     .build();
         }
     }

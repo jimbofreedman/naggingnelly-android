@@ -20,6 +20,7 @@ import io.reactivex.Scheduler;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import uk.co.ribot.androidboilerplate.data.model.Action;
 import uk.co.ribot.androidboilerplate.data.model.Folder;
 import uk.co.ribot.androidboilerplate.data.model.Ribot;
 
@@ -107,6 +108,40 @@ public class DatabaseHelper {
                     @Override
                     public Folder apply(@NonNull Cursor cursor) throws Exception {
                         return Folder.create(Db.FolderTable.parseCursor(cursor));
+                    }
+                });
+    }
+
+    public Observable<Action> setActions(final Collection<Action> newActions) {
+        return Observable.create(new ObservableOnSubscribe<Action>() {
+            @Override
+            public void subscribe(ObservableEmitter<Action> emitter) throws Exception {
+                if (emitter.isDisposed()) return;
+                BriteDatabase.Transaction transaction = mDb.newTransaction();
+                try {
+                    mDb.delete(Db.ActionTable.TABLE_NAME, null);
+                    for (Action action : newActions) {
+                        long result = mDb.insert(Db.ActionTable.TABLE_NAME,
+                                Db.ActionTable.toContentValues(action),
+                                SQLiteDatabase.CONFLICT_REPLACE);
+                        if (result >= 0) emitter.onNext(action);
+                    }
+                    transaction.markSuccessful();
+                    emitter.onComplete();
+                } finally {
+                    transaction.end();
+                }
+            }
+        });
+    }
+
+    public Observable<List<Action>> getActions() {
+        return mDb.createQuery(Db.ActionTable.TABLE_NAME,
+                "SELECT * FROM " + Db.ActionTable.TABLE_NAME)
+                .mapToList(new Function<Cursor, Action>() {
+                    @Override
+                    public Action apply(@NonNull Cursor cursor) throws Exception {
+                        return Action.create(Db.ActionTable.parseCursor(cursor));
                     }
                 });
     }

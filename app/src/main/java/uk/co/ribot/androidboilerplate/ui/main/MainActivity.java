@@ -16,6 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.ribot.androidboilerplate.R;
 import uk.co.ribot.androidboilerplate.data.SyncService;
+import uk.co.ribot.androidboilerplate.data.model.Action;
 import uk.co.ribot.androidboilerplate.data.model.Folder;
 import uk.co.ribot.androidboilerplate.data.model.Ribot;
 import uk.co.ribot.androidboilerplate.ui.base.BaseActivity;
@@ -29,6 +30,7 @@ public class MainActivity extends BaseActivity implements MainMvpView {
     @Inject MainPresenter mMainPresenter;
     @Inject RibotsAdapter mRibotsAdapter;
     @Inject FoldersAdapter mFoldersAdapter;
+    @Inject ActionsAdapter mActionsAdapter;
 
     @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
 
@@ -50,11 +52,12 @@ public class MainActivity extends BaseActivity implements MainMvpView {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        mRecyclerView.setAdapter(mFoldersAdapter);
+        mRecyclerView.setAdapter(mActionsAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mMainPresenter.attachView(this);
         mMainPresenter.loadRibots();
         mMainPresenter.loadFolders();
+        mMainPresenter.loadActions();
 
         if (getIntent().getBooleanExtra(EXTRA_TRIGGER_SYNC_FLAG, true)) {
             startService(SyncService.getStartIntent(this));
@@ -100,5 +103,18 @@ public class MainActivity extends BaseActivity implements MainMvpView {
         mFoldersAdapter.setFolders(Collections.<Folder>emptyList());
         mFoldersAdapter.notifyDataSetChanged();
         Toast.makeText(this, R.string.empty_folders, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showActions(List<Action> actions) {
+        mActionsAdapter.setActions(actions);
+        mActionsAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void showActionsEmpty() {
+        mActionsAdapter.setActions(Collections.<Action>emptyList());
+        mActionsAdapter.notifyDataSetChanged();
+        Toast.makeText(this, R.string.empty_actions, Toast.LENGTH_LONG).show();
     }
 }

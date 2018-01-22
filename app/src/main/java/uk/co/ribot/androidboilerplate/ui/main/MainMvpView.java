@@ -2,6 +2,7 @@ package uk.co.ribot.androidboilerplate.ui.main;
 
 import java.util.List;
 
+import uk.co.ribot.androidboilerplate.data.model.Action;
 import uk.co.ribot.androidboilerplate.data.model.Folder;
 import uk.co.ribot.androidboilerplate.data.model.Ribot;
 import uk.co.ribot.androidboilerplate.ui.base.MvpView;
@@ -15,6 +16,10 @@ public interface MainMvpView extends MvpView {
     void showFolders(List<Folder> folders);
 
     void showFoldersEmpty();
+
+    void showActions(List<Action> actions);
+
+    void showActionsEmpty();
 
     void showError();
 
