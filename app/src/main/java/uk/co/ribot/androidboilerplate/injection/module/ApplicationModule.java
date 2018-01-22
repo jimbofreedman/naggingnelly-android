@@ -7,7 +7,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import uk.co.ribot.androidboilerplate.data.remote.GtdService;
+import uk.co.ribot.androidboilerplate.data.remote.ActionsService;
+import uk.co.ribot.androidboilerplate.data.remote.FoldersService;
 import uk.co.ribot.androidboilerplate.data.remote.RibotsService;
 import uk.co.ribot.androidboilerplate.injection.ApplicationContext;
 
@@ -41,7 +42,9 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    GtdService provideFoldersService() {
-        return GtdService.Creator.newFoldersService();
-    }
+    FoldersService provideFoldersService() { return FoldersService.Creator.newFoldersService(); }
+
+    @Provides
+    @Singleton
+    ActionsService provideActionsService() { return ActionsService.Creator.newActionsService(); }
 }

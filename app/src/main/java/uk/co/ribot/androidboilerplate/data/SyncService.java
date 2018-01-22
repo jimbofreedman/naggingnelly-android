@@ -25,7 +25,9 @@ import uk.co.ribot.androidboilerplate.util.RxUtil;
 public class SyncService extends Service {
 
     @Inject DataManager mDataManager;
-    private Disposable mDisposable;
+    private Disposable mDisposableRibot;
+    private Disposable mDisposableFolders;
+    private Disposable mDisposableActions;
 
     public static Intent getStartIntent(Context context) {
         return new Intent(context, SyncService.class);
@@ -52,13 +54,39 @@ public class SyncService extends Service {
             return START_NOT_STICKY;
         }
 
-        RxUtil.dispose(mDisposable);
-/*        mDataManager.syncRibots()
+        RxUtil.dispose(mDisposableActions);
+        mDataManager.syncActions()
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Observer<Action>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        mDisposableActions = d;
+                    }
+
+                    @Override
+                    public void onNext(@NonNull Action action) {
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Timber.w(e, "Error syncing.");
+                        stopSelf(startId);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Timber.i("Synced successfully!");
+                        stopSelf(startId);
+                    }
+                });
+
+/*        RxUtil.dispose(mDisposableRibot);
+        mDataManager.syncRibots()
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Observer<Ribot>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-                        mDisposable = d;
+                        mDisposableRibot = d;
                     }
 
                     @Override
@@ -76,43 +104,19 @@ public class SyncService extends Service {
                         Timber.i("Synced successfully!");
                         stopSelf(startId);
                     }
-                });
+                });*/
 
+        RxUtil.dispose(mDisposableFolders);
         mDataManager.syncFolders()
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Observer<Folder>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-                        mDisposable = d;
+                        mDisposableFolders = d;
                     }
 
                     @Override
                     public void onNext(@NonNull Folder folder) {
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        Timber.w(e, "Error syncing.");
-                        stopSelf(startId);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Timber.i("Synced successfully!");
-                        stopSelf(startId);
-                    }
-                });*/
-
-        mDataManager.syncActions()
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<Action>() {
-                    @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-                        mDisposable = d;
-                    }
-
-                    @Override
-                    public void onNext(@NonNull Action action) {
                     }
 
                     @Override
@@ -133,7 +137,9 @@ public class SyncService extends Service {
 
     @Override
     public void onDestroy() {
-        if (mDisposable != null) mDisposable.dispose();
+        if (mDisposableRibot != null) mDisposableRibot.dispose();
+        if (mDisposableFolders != null) mDisposableFolders.dispose();
+        if (mDisposableActions != null) mDisposableActions.dispose();
         super.onDestroy();
     }
 

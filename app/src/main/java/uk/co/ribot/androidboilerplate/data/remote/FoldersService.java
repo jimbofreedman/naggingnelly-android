@@ -21,20 +21,17 @@ import uk.co.ribot.androidboilerplate.data.model.Action;
 import uk.co.ribot.androidboilerplate.data.model.Folder;
 import uk.co.ribot.androidboilerplate.util.MyGsonTypeAdapterFactory;
 
-public interface GtdService {
+public interface FoldersService {
 
     String ENDPOINT = "http://10.0.2.2:8000";
 
     @GET("/gtd/folders/")
     Observable<List<Folder>> getFolders();
 
-    @GET("/gtd/actions/")
-    Observable<List<Action>> getActions();
-
     /******** Helper class that sets up a new services *******/
     class Creator {
 
-        public static GtdService newFoldersService() {
+        public static FoldersService newFoldersService() {
             Gson gson = new GsonBuilder()
                     .registerTypeAdapterFactory(MyGsonTypeAdapterFactory.create())
                     .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -56,12 +53,12 @@ public interface GtdService {
             });
 
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(GtdService.ENDPOINT)
+                    .baseUrl(FoldersService.ENDPOINT)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .client(httpClient.build())
                     .build();
-            return retrofit.create(GtdService.class);
+            return retrofit.create(FoldersService.class);
         }
     }
 }
