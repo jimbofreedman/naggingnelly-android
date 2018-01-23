@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<uk.co.ribot.androidboilerplate.ui.main.ActionCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.co.makosoft.naggingnelly.ui.main.ActionCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
@@ -60,4 +60,4 @@
             tools:layout_editor_absoluteX="4dp" />
     </android.support.constraint.ConstraintLayout>
 
-</uk.co.ribot.androidboilerplate.ui.main.ActionCardView>
+</uk.co.makosoft.naggingnelly.ui.main.ActionCardView>
