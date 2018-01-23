@@ -1,5 +1,6 @@
 package uk.co.ribot.androidboilerplate.ui.main;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -97,7 +98,7 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        Timber.e(e, "There was an error loading the ribots.");
+                        Timber.e(e, "There was an error loading the folders.");
                         getMvpView().showError();
                     }
 
@@ -131,7 +132,36 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        Timber.e(e, "There was an error loading the ribots.");
+                        Timber.e(e, "There was an error loading the actions.");
+                        getMvpView().showError();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    public void completeAction(Action action) {
+        Action newAction = action.newBuilder().setStatus(1).build();
+        mDataManager.putAction(newAction)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Observer<Action>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        mDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(@NonNull Action action) {
+                        getMvpView().showActions(Arrays.asList(action));
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Timber.e(e, "There was an error loading the actions.");
                         getMvpView().showError();
                     }
 

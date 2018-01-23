@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.Toast;
 
 import java.util.Collections;
@@ -14,6 +15,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 import uk.co.ribot.androidboilerplate.R;
 import uk.co.ribot.androidboilerplate.data.SyncService;
 import uk.co.ribot.androidboilerplate.data.model.Action;
@@ -116,5 +118,14 @@ public class MainActivity extends BaseActivity implements MainMvpView {
         mActionsAdapter.setActions(Collections.<Action>emptyList());
         mActionsAdapter.notifyDataSetChanged();
         Toast.makeText(this, R.string.empty_actions, Toast.LENGTH_LONG).show();
+    }
+
+    public void completeClick(View view) {
+        Object o = view.getTag();
+        Action action = (Action)o;
+
+        Timber.i(String.format("Complete clicked! %s", action.shortDescription()));
+        mMainPresenter.completeAction(action);
+        mActionsAdapter.notifyDataSetChanged();
     }
 }

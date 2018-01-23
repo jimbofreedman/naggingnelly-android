@@ -154,6 +154,7 @@ dependencies {
     testCompile "org.hamcrest:hamcrest-library:$HAMCREST_VERSION"
     testCompile "org.hamcrest:hamcrest-integration:$HAMCREST_VERSION"
     testCompile 'org.robolectric:robolectric:3.3'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }
 
 // Log out test results to console

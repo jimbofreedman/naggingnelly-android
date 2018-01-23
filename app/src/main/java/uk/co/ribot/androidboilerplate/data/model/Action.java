@@ -13,13 +13,17 @@ public abstract class Action implements Comparable<Action>, Parcelable {
 
     public abstract Integer id();
     @SerializedName("short_description") public abstract String shortDescription();
+    public abstract Integer status();
 
     public static Action create(Action action) {
-        return new AutoValue_Action(action.id(), action.shortDescription());
+        return new AutoValue_Action(action.id(), action.shortDescription(), action.status());
     }
 
     public static Builder builder() {
         return new AutoValue_Action.Builder();
+    }
+    public Builder newBuilder() {
+        return new AutoValue_Action.Builder(this);
     }
 
     public static TypeAdapter<Action> typeAdapter(Gson gson) {
@@ -35,6 +39,7 @@ public abstract class Action implements Comparable<Action>, Parcelable {
     public abstract static class Builder {
         public abstract Action.Builder setId(Integer id);
         public abstract Action.Builder setShortDescription(String shortDescription);
+        public abstract Action.Builder setStatus(Integer status);
         public abstract Action build();
     }
 }

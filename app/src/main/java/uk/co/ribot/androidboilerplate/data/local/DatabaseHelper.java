@@ -135,6 +135,25 @@ public class DatabaseHelper {
         });
     }
 
+    public Observable<Action> putAction(final Action action) {
+        return Observable.create(new ObservableOnSubscribe<Action>() {
+            @Override
+            public void subscribe(ObservableEmitter<Action> emitter) throws Exception {
+                if (emitter.isDisposed()) return;
+                BriteDatabase.Transaction transaction = mDb.newTransaction();
+                try {
+                    mDb.insert(Db.ActionTable.TABLE_NAME,
+                            Db.ActionTable.toContentValues(action),
+                            SQLiteDatabase.CONFLICT_REPLACE);
+                    transaction.markSuccessful();
+                    emitter.onComplete();
+                } finally {
+                    transaction.end();
+                }
+            }
+        });
+    }
+
     public Observable<List<Action>> getActions() {
         return mDb.createQuery(Db.ActionTable.TABLE_NAME,
                 "SELECT * FROM " + Db.ActionTable.TABLE_NAME)

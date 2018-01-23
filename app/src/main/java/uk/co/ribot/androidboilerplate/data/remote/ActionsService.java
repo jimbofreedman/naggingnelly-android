@@ -16,7 +16,12 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 import uk.co.ribot.androidboilerplate.data.model.Action;
 import uk.co.ribot.androidboilerplate.util.MyGsonTypeAdapterFactory;
 
@@ -26,6 +31,9 @@ public interface ActionsService {
 
     @GET("/gtd/actions/")
     Observable<List<Action>> getActions();
+
+    @PATCH("/gtd/actions/{id}/")
+    Observable<Action> putAction(@Path("id") Integer id, @Body Action actions);
 
     /******** Helper class that sets up a new services *******/
     class Creator {
