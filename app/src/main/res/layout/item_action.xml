@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="120dp"
     android:layout_marginBottom="6dp"
     android:layout_marginLeft="12dp"
     android:layout_marginRight="12dp"
@@ -17,17 +17,11 @@
 
         <TextView
             android:id="@+id/text_name"
-            android:layout_width="0dp"
+            android:layout_width="225dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:textSize="@dimen/text_body"
-            card_view:layout_constraintBottom_toBottomOf="parent"
-            card_view:layout_constraintEnd_toStartOf="@+id/btn_complete"
-            card_view:layout_constraintStart_toStartOf="parent"
-            card_view:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="4dp"
+            tools:layout_editor_absoluteY="8dp"
             tools:text="Antony Ribot" />
 
         <ImageButton
@@ -41,17 +35,29 @@
             android:contentDescription="Complete"
             android:onClick="completeClick"
             card_view:layout_constraintEnd_toEndOf="parent"
-            card_view:layout_constraintStart_toEndOf="@+id/text_name"
             card_view:srcCompat="@android:drawable/checkbox_on_background" />
 
         <TextView
             android:id="@+id/statusText"
+            android:layout_width="21dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:text="a"
+            card_view:layout_constraintEnd_toStartOf="@+id/btn_complete"
+            card_view:layout_constraintStart_toEndOf="@+id/text_name"
+            tools:layout_editor_absoluteY="8dp" />
+
+        <TextView
+            android:id="@+id/priorityTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="TextView"
             card_view:layout_constraintBottom_toBottomOf="parent"
-            card_view:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="249dp" />
+            card_view:layout_constraintTop_toBottomOf="@+id/text_name"
+            card_view:layout_constraintVertical_bias="0.396"
+            tools:layout_editor_absoluteX="4dp" />
     </android.support.constraint.ConstraintLayout>
 
 </uk.co.ribot.androidboilerplate.ui.main.ActionCardView>

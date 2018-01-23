@@ -14,9 +14,10 @@ public abstract class Action implements Comparable<Action>, Parcelable {
     public abstract Integer id();
     @SerializedName("short_description") public abstract String shortDescription();
     public abstract Integer status();
+    public abstract Integer priority();
 
     public static Action create(Action action) {
-        return new AutoValue_Action(action.id(), action.shortDescription(), action.status());
+        return new AutoValue_Action(action.id(), action.shortDescription(), action.status(), action.priority());
     }
 
     public static Builder builder() {
@@ -32,7 +33,7 @@ public abstract class Action implements Comparable<Action>, Parcelable {
 
     @Override
     public int compareTo(@NonNull Action another) {
-        return id().compareTo(another.id());
+        return -priority().compareTo(another.priority());
     }
 
     @AutoValue.Builder
@@ -40,6 +41,7 @@ public abstract class Action implements Comparable<Action>, Parcelable {
         public abstract Action.Builder setId(Integer id);
         public abstract Action.Builder setShortDescription(String shortDescription);
         public abstract Action.Builder setStatus(Integer status);
+        public abstract Action.Builder setPriority(Integer status);
         public abstract Action build();
     }
 }

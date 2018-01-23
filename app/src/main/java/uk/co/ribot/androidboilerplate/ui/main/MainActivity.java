@@ -109,8 +109,14 @@ public class MainActivity extends BaseActivity implements MainMvpView {
 
     @Override
     public void showActions(List<Action> actions) {
-        mActionsAdapter.setActions(actions);
-        mActionsAdapter.notifyDataSetChanged();
+        Collections.sort(actions);
+        actions.removeIf((p) -> p.status() != 0); // only Status = OPEN
+        if (actions.isEmpty()) {
+            showActionsEmpty();
+        } else {
+            mActionsAdapter.setActions(actions);
+            mActionsAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override

@@ -45,6 +45,7 @@ public class ActionsAdapter extends RecyclerView.Adapter<ActionsAdapter.ActionVi
         holder.nameTextView.setText(String.format("%s", action.shortDescription()));
         holder.completeButton.setTag(action);
         holder.statusTextView.setText(action.status().toString());
+        holder.priorityTextView.setText(action.priority().toString());
     }
 
     @Override
@@ -56,6 +57,7 @@ public class ActionsAdapter extends RecyclerView.Adapter<ActionsAdapter.ActionVi
         @BindView(R.id.text_name) TextView nameTextView;
         @BindView(R.id.btn_complete) ImageButton completeButton;
         @BindView(R.id.statusText) TextView statusTextView;
+        @BindView(R.id.priorityTextView) TextView priorityTextView;
 
         Action action;
         public Action getAction() { return this.action; };

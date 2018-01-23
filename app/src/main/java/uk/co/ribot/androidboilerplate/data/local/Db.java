@@ -98,12 +98,14 @@ public class Db {
         public static final String COLUMN_ID = "id";
         public static final String COLUMN_SHORT_DESCRIPTION = "name";
         public static final String COLUMN_STATUS = "status";
+        public static final String COLUMN_PRIORITY = "priority";
 
         public static final String CREATE =
                 "CREATE TABLE " + TABLE_NAME + " (" +
                         COLUMN_ID + " INTEGER PRIMARY KEY," +
                         COLUMN_SHORT_DESCRIPTION + " TEXT NOT NULL," +
-                        COLUMN_STATUS + " INTEGER NOT NULL" +
+                        COLUMN_STATUS + " INTEGER NOT NULL," +
+                        COLUMN_PRIORITY + " INTEGER NOT NULL" +
                         " ); ";
 
         public static ContentValues toContentValues(Action action) {
@@ -111,6 +113,7 @@ public class Db {
             values.put(COLUMN_ID, action.id());
             values.put(COLUMN_SHORT_DESCRIPTION, action.shortDescription());
             values.put(COLUMN_STATUS, action.status());
+            values.put(COLUMN_PRIORITY, action.priority());
             return values;
         }
 
@@ -119,6 +122,7 @@ public class Db {
                     .setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)))
                     .setShortDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SHORT_DESCRIPTION)))
                     .setStatus(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STATUS)))
+                    .setPriority(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PRIORITY)))
                     .build();
         }
     }
