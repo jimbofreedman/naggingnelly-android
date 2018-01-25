@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import uk.co.makosoft.naggingnelly.data.remote.AccountService;
 import uk.co.makosoft.naggingnelly.data.remote.ActionsService;
 import uk.co.makosoft.naggingnelly.data.remote.FoldersService;
 import uk.co.makosoft.naggingnelly.data.remote.RibotsService;
@@ -32,6 +33,12 @@ public class ApplicationModule {
     @ApplicationContext
     Context provideContext() {
         return mApplication;
+    }
+
+    @Provides
+    @Singleton
+    AccountService provideAccountService() {
+        return AccountService.Creator.newAccountService();
     }
 
     @Provides

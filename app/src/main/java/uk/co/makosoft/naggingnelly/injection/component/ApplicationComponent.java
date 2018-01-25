@@ -10,6 +10,7 @@ import uk.co.makosoft.naggingnelly.data.DataManager;
 import uk.co.makosoft.naggingnelly.data.SyncService;
 import uk.co.makosoft.naggingnelly.data.local.DatabaseHelper;
 import uk.co.makosoft.naggingnelly.data.local.PreferencesHelper;
+import uk.co.makosoft.naggingnelly.data.remote.AccountService;
 import uk.co.makosoft.naggingnelly.data.remote.FoldersService;
 import uk.co.makosoft.naggingnelly.data.remote.RibotsService;
 import uk.co.makosoft.naggingnelly.injection.ApplicationContext;
@@ -24,6 +25,7 @@ public interface ApplicationComponent {
 
     @ApplicationContext Context context();
     Application application();
+    AccountService accountService();
     RibotsService ribotsService();
     FoldersService foldersService();
     PreferencesHelper preferencesHelper();

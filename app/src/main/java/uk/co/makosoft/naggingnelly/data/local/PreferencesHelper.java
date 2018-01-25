@@ -24,4 +24,13 @@ public class PreferencesHelper {
         mPref.edit().clear().apply();
     }
 
+    public String getToken() {
+        return mPref.getString("token", "");
+    }
+
+    public String setToken(String token) {
+        mPref.edit().putString("token", token).commit();
+        return token;
+    }
+
 }

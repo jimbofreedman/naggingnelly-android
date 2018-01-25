@@ -14,7 +14,9 @@ import uk.co.makosoft.naggingnelly.data.local.DatabaseHelper;
 import uk.co.makosoft.naggingnelly.data.local.PreferencesHelper;
 import uk.co.makosoft.naggingnelly.data.model.Action;
 import uk.co.makosoft.naggingnelly.data.model.Folder;
+import uk.co.makosoft.naggingnelly.data.model.LoginDetails;
 import uk.co.makosoft.naggingnelly.data.model.Ribot;
+import uk.co.makosoft.naggingnelly.data.remote.AccountService;
 import uk.co.makosoft.naggingnelly.data.remote.ActionsService;
 import uk.co.makosoft.naggingnelly.data.remote.FoldersService;
 import uk.co.makosoft.naggingnelly.data.remote.RibotsService;
@@ -22,6 +24,7 @@ import uk.co.makosoft.naggingnelly.data.remote.RibotsService;
 @Singleton
 public class DataManager {
 
+    private final AccountService mAccountService;
     private final RibotsService mRibotsService;
     private final FoldersService mFoldersService;
     private final ActionsService mActionsService;
@@ -29,9 +32,10 @@ public class DataManager {
     private final PreferencesHelper mPreferencesHelper;
 
     @Inject
-    public DataManager(RibotsService ribotsService, FoldersService foldersService,
+    public DataManager(AccountService accountService, RibotsService ribotsService, FoldersService foldersService,
                        ActionsService actionsService, PreferencesHelper preferencesHelper,
                        DatabaseHelper databaseHelper) {
+        mAccountService = accountService;
         mRibotsService = ribotsService;
         mFoldersService = foldersService;
         mActionsService = actionsService;
@@ -100,5 +104,11 @@ public class DataManager {
                     return mDatabaseHelper.putAction(action);
                 }
             });
+    }
+
+    public Observable<String> login(String email, String password) {
+        Timber.i(String.format("Attempting login as %s", email));
+        return mAccountService.login(LoginDetails.builder().setEmail(email).setPassword(password).build())
+                .map((token) -> mPreferencesHelper.setToken(token));
     }
 }
