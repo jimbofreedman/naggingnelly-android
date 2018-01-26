@@ -15,8 +15,10 @@ import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.adapter.rxjava2.HttpException;
 import timber.log.Timber;
 import uk.co.makosoft.naggingnelly.BoilerplateApplication;
+import uk.co.makosoft.naggingnelly.NotLoggedInException;
 import uk.co.makosoft.naggingnelly.data.model.Action;
 import uk.co.makosoft.naggingnelly.data.model.Folder;
 import uk.co.makosoft.naggingnelly.data.model.Ribot;
@@ -27,6 +29,7 @@ import uk.co.makosoft.naggingnelly.util.RxUtil;
 public class SyncService extends Service {
 
     @Inject DataManager mDataManager;
+    private Disposable mDisposableLogin;
     private Disposable mDisposableRibot;
     private Disposable mDisposableFolders;
     private Disposable mDisposableActions;
@@ -56,6 +59,30 @@ public class SyncService extends Service {
             stopSelf(startId);
             return START_NOT_STICKY;
         }
+
+        RxUtil.dispose(mDisposableLogin);
+        Observable<String> loginObservable = mDataManager.login("blah", "noooo");
+        loginObservable.subscribeOn(Schedulers.io())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        mDisposableLogin = d;
+                    }
+
+                    @Override
+                    public void onNext(@NonNull String token) {
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Timber.w(e, "Error logging in.");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Timber.i("Logged in successfully!");
+                    }
+                });
 
         RxUtil.dispose(mDisposableActions);
         Observable<Action> actionObservable = mDataManager.syncActions();

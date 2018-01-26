@@ -17,6 +17,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
+import uk.co.makosoft.naggingnelly.data.local.PreferencesHelper;
 import uk.co.makosoft.naggingnelly.data.model.Folder;
 import uk.co.makosoft.naggingnelly.util.MyGsonTypeAdapterFactory;
 
@@ -30,7 +31,7 @@ public interface FoldersService {
     /******** Helper class that sets up a new services *******/
     class Creator {
 
-        public static FoldersService newFoldersService() {
+        public static FoldersService newFoldersService(PreferencesHelper preferencesHelper) {
             Gson gson = new GsonBuilder()
                     .registerTypeAdapterFactory(MyGsonTypeAdapterFactory.create())
                     .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -46,7 +47,7 @@ public interface FoldersService {
             httpClient.addInterceptor(new Interceptor() {
                 @Override
                 public okhttp3.Response intercept(Chain chain) throws IOException {
-                    Request request = chain.request().newBuilder().addHeader("Authorization", "Token 1d9d51931c542249ce5430e3d81332e38260ec35").build();
+                    Request request = chain.request().newBuilder().addHeader("Authorization", String.format("Token {}", preferencesHelper.getToken())).build();
                     return chain.proceed(request);
                 }
             });

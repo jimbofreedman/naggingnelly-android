@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import timber.log.Timber;
 import uk.co.makosoft.naggingnelly.injection.ApplicationContext;
 
 @Singleton
@@ -29,6 +30,7 @@ public class PreferencesHelper {
     }
 
     public String setToken(String token) {
+        Timber.i(String.format("Saving token %s", token));
         mPref.edit().putString("token", token).commit();
         return token;
     }

@@ -20,6 +20,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.PATCH;
 import retrofit2.http.Path;
+import uk.co.makosoft.naggingnelly.data.local.PreferencesHelper;
 import uk.co.makosoft.naggingnelly.data.model.Action;
 import uk.co.makosoft.naggingnelly.util.MyGsonTypeAdapterFactory;
 
@@ -35,7 +36,7 @@ public interface ActionsService {
 
     /******** Helper class that sets up a new services *******/
     class Creator {
-        public static ActionsService newActionsService() {
+        public static ActionsService newActionsService(PreferencesHelper preferencesHelper) {
             Gson gson = new GsonBuilder()
                     .registerTypeAdapterFactory(MyGsonTypeAdapterFactory.create())
                     .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -51,7 +52,7 @@ public interface ActionsService {
             httpClient.addInterceptor(new Interceptor() {
                 @Override
                 public okhttp3.Response intercept(Chain chain) throws IOException {
-                    Request request = chain.request().newBuilder().addHeader("Authorization", "Token 1d9d51931c542249ce5430e3d81332e38260ec35").build();
+                    Request request = chain.request().newBuilder().addHeader("Authorization", String.format("Token {}", preferencesHelper.getToken())).build();
                     return chain.proceed(request);
                 }
             });

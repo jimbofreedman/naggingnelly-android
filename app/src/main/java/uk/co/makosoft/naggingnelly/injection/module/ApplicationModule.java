@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import uk.co.makosoft.naggingnelly.data.local.PreferencesHelper;
 import uk.co.makosoft.naggingnelly.data.remote.AccountService;
 import uk.co.makosoft.naggingnelly.data.remote.ActionsService;
 import uk.co.makosoft.naggingnelly.data.remote.FoldersService;
@@ -49,9 +50,9 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    FoldersService provideFoldersService() { return FoldersService.Creator.newFoldersService(); }
+    FoldersService provideFoldersService(PreferencesHelper preferencesHelper) { return FoldersService.Creator.newFoldersService(preferencesHelper); }
 
     @Provides
     @Singleton
-    ActionsService provideActionsService() { return ActionsService.Creator.newActionsService(); }
+    ActionsService provideActionsService(PreferencesHelper preferencesHelper) { return ActionsService.Creator.newActionsService(preferencesHelper); }
 }
